@@ -18,24 +18,24 @@ cask "claude-account-switcher" do
     strategy :github_latest
   end
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "ClaudeAccountSwitcher.app"
 
   # A menu bar item with no Dock icon; quit it before replacing it.
   uninstall quit: "rt.armand.ClaudeAccountSwitcher"
 
-  postflight do
+  postflight_steps do
     # Homebrew quarantines every cask download on purpose, so Gatekeeper runs
     # its checks, and `brew install` no longer offers --no-quarantine.  This
     # build is signed ad hoc and not notarised (no Apple Developer Program
     # membership), so a quarantined copy is refused with a misleading "damaged"
     # message.  Clearing the attribute here is the `xattr -dr` a direct
     # downloader runs by hand, done once, in a file anyone can read.
-    system_command "/usr/bin/xattr",
-                   args:         ["-d", "-r", "com.apple.quarantine", "#{appdir}/ClaudeAccountSwitcher.app"],
-                   must_succeed: false,
-                   print_stderr: false
+    run "/usr/bin/xattr",
+        args:         ["-d", "-r", "com.apple.quarantine", "{{appdir}}/ClaudeAccountSwitcher.app"],
+        must_succeed: false,
+        print_stderr: false
   end
 
   # Only what the app itself wrote: cached percentages and reset times, the
