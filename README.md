@@ -2,6 +2,7 @@
 
 ```sh
 brew tap armandrt/tap
+brew trust armandrt/tap    # Homebrew 7 and later
 brew install --cask claude-account-switcher
 ```
 
