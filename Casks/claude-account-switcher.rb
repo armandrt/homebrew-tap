@@ -4,13 +4,13 @@
 # the result there: scripts/update-cask.sh renders, the release workflow pushes.
 # It rewrites exactly two lines, `version` and `sha256`, so keep them one per line.
 cask "claude-account-switcher" do
-  version "0.1.0"
+  version "0.1.1"
   # All zeros means no release has been rendered from this file yet.
-  sha256 "64eb712e96992572eddcd016ebdac9ef4670d73bbb14c20fa7104f6803e47760"
+  sha256 "6504351b8710d549a60a5afc7dc4efbdfc821fdc6b052ddc4bb9936300a4e294"
 
   url "https://github.com/armandrt/claude-account-switcher/releases/download/v#{version}/ClaudeAccountSwitcher-#{version}.zip"
   name "Claude Account Switcher"
-  desc "Menu bar app that shows every Claude Code account's quota and switches between them"
+  desc "Shows every Claude Code account's quota and switches between them"
   homepage "https://github.com/armandrt/claude-account-switcher"
 
   livecheck do
@@ -22,9 +22,6 @@ cask "claude-account-switcher" do
 
   app "ClaudeAccountSwitcher.app"
 
-  # A menu bar item with no Dock icon; quit it before replacing it.
-  uninstall quit: "rt.armand.ClaudeAccountSwitcher"
-
   postflight_steps do
     # Homebrew quarantines every cask download on purpose, so Gatekeeper runs
     # its checks, and `brew install` no longer offers --no-quarantine.  This
@@ -35,8 +32,15 @@ cask "claude-account-switcher" do
     run "/usr/bin/xattr",
         args:         ["-d", "-r", "com.apple.quarantine", "{{appdir}}/ClaudeAccountSwitcher.app"],
         must_succeed: false,
-        print_stderr: false
+        print_stderr: true
   end
+
+  # A menu bar item with no Dock icon.  Stopped with a signal rather than
+  # `quit:`, which sends an Apple event and gets the terminal an Automation
+  # permission dialog.  Homebrew skips a signal on upgrade unless asked, and
+  # reopens nothing afterwards — hence the line in the caveats.
+  uninstall signal:     ["TERM", "rt.armand.ClaudeAccountSwitcher"],
+            on_upgrade: :signal
 
   # Only what the app itself wrote: cached percentages and reset times, the
   # keychain log, the switch lock, and its preferences.  Never the keychain
@@ -56,5 +60,8 @@ cask "claude-account-switcher" do
     This build is not notarised (no Apple Developer Program membership). The cask
     clears the download quarantine for you after installing, which is what a
     direct downloader does by hand with `xattr -dr com.apple.quarantine`.
+
+    `brew upgrade` closes the app and does not reopen it: open it again from
+    Applications.
   EOS
 end
