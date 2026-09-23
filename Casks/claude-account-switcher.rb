@@ -4,9 +4,9 @@
 # the result there: scripts/update-cask.sh renders, the release workflow pushes.
 # It rewrites exactly two lines, `version` and `sha256`, so keep them one per line.
 cask "claude-account-switcher" do
-  version "0.1.1"
+  version "0.1.2"
   # All zeros means no release has been rendered from this file yet.
-  sha256 "6504351b8710d549a60a5afc7dc4efbdfc821fdc6b052ddc4bb9936300a4e294"
+  sha256 "fb418b31af6699f118c58c0a0f3b6072760d0bc14d101589f29c878cc7293ebf"
 
   url "https://github.com/armandrt/claude-account-switcher/releases/download/v#{version}/ClaudeAccountSwitcher-#{version}.zip"
   name "Claude Account Switcher"
